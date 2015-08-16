@@ -9,13 +9,16 @@ class AllError:public std::exception
 {
 	std::string str;
 public:
-	AllError(const char*p):str(p) {
+	AllError(const char*p):str(p) { 
+		//  semicolon after constructor initialisation list: 
+		// 1)calling base class constructor (no)
+		// 2)Initialising member variables before the body of the constructor executes. +
 	}
 
 	~AllError() throw() {
 	}
 
-	const char* what()const throw() {
+	const char* what()const throw() { // function doesn't throw exceptions, const: function doesn't change object
 		return str.c_str();
 	}
 };
@@ -23,13 +26,14 @@ public:
 typedef int TokenMovePosition;
 typedef std::vector<TokenMovePosition> TokenFree;
 
-class TokenPosition16:public std::vector<int> {
+class TokenPosition16:public std::vector<int> { // inherited from vector<int>
+// 
 public:
 	TokenPosition16() {
-		reserve(16);
+		reserve(16); // Requests that the vector capacity be at least enough to contain n elements
 	}
 
-	const_iterator Find(int k) const {
+	const_iterator Find(int k) const { // const_iterator iterates through const vector
 		const_iterator i=begin();
 		for(;i!=end();i++) {
 			if(*i==k)
@@ -39,9 +43,9 @@ public:
 	};
 
 	void Reset() {
-		assign(16,0);
+		assign(16,0); 
 		for(int i=0;i<size();i++) {
-			at(i)=i+1;
+			at(i)=i+1; // returns reference to position
 		}
 	}
 
@@ -56,20 +60,19 @@ public:
 		// manhattan distance
 		int err=0;
 		for(int i=0;i<16;i++) {
-		
-			int goalpos=std::distance(goal.begin(),goal.Find(at(i)));
-			int cols=std::abs(goalpos%4-i%4);
+			int goalpos=std::distance(goal.begin(),goal.Find(at(i))); // std::distance calculates number of elements
+			int cols=std::abs(goalpos%4-i%4); // % 
 			int rows=std::abs(goalpos/4-i/4);
 			err+=cols+rows;
 		}
 		return err;
 	}
 
-	bool Goal(const TokenPosition16&t) const {
+	bool Goal(const TokenPosition16 &t) const {
 	
-	const int icount=16;
+		const int icount=16;
 		if(t.size()!=icount || size()!=icount)
-		throw AllError("Wrong tokens");
+			throw AllError("Wrong tokens");
 		int i=0;
 		int ret=0;
 		while(i<icount && !(ret=at(i)-t.at(i))) {
@@ -80,7 +83,7 @@ public:
 
 	void Random() {
 		clear();
-		int tokens[]={2,11,14,5, 9,7,16,4, 13,12,1,3, 8,10,15,6};assign(&tokens[0],&tokens[sizeof(tokens)/sizeof(int)]);
+		int tokens[]={2,11,14,5, 9,7,16,4, 13,12,1,3, 8,10,15,6}; assign(&tokens[0],&tokens[sizeof(tokens)/sizeof(int)]);
 		//int tokens[]={1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16};assign(&tokens[0],&tokens[sizeof(tokens)/sizeof(int)]);
 		//int tokens[]={1,2,3,4, 5,6,7,8, 9,10,11,16, 13,14,15,12};assign(&tokens[0],&tokens[sizeof(tokens)/sizeof(int)]);
 		//int tokens[]={1,2,3,4, 5,6,7,8, 9,10,16,11, 13,14,15,12};assign(&tokens[0],&tokens[sizeof(tokens)/sizeof(int)]);
@@ -136,23 +139,25 @@ public:
 	}
 };
 
-std::ostream& operator << (std::ostream &o,const TokenPosition16& t) {
+std::ostream& operator << (std::ostream &o, const TokenPosition16& t) { //ostream: in order to understand one has to write his own
+// 'stream' is internally nothing but a series of characters
+/*
+	Streams provide you with a universal character-based interface to any type of storage medium (for example, a file), without requiring you to know the details of how to write to the storage medium. Any object that can be written to one type of stream, can be written to all types of streams. In other words, as long as an object has a stream representation, any storage medium can accept objects with that stream representation.
+*/
 	for(int i=0;i<t.size();i++) {
 		if(i%4==0)
-			o<<std::endl;
+			o << std::endl;
 		o.width(3);
 		if(t[i]==16)
-			o<<" ";
+			o << " ";
 		else
-			o<<t[i];
+			o << t[i];
 	}
 	return o;
 };
 
 typedef TokenPosition16 TokenPosition;
-
 typedef std::set<TokenPosition> TokenSet;
-
 typedef std::vector<const TokenPosition*> TokenExpand;
 
 struct Vertex {
@@ -280,8 +285,7 @@ public:
 };
 
 int main(int argc, char **argv) {
-	try
-	{
+	try {
 		TokenPosition initial;
 		initial.Random();
 		TokenPosition goal;
